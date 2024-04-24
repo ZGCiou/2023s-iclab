@@ -1,0 +1,1 @@
+../02_SYN/Netlist/GLCM_SYN.v

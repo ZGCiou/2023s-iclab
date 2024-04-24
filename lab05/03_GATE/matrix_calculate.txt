@@ -1,0 +1,18 @@
+[ PAT NO. 99 ]
+
+[ calculate matrix AB ]
+
+[ AxB ]
+
+            -5049              -180 
+           -10220            -21840 
+
+
+[ calculate matrix ABC ]
+
+[ AxBxCT ]
+
+          -369279            112482 
+         -2036020           2804760 
+
+

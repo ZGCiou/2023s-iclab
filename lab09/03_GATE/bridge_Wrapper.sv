@@ -1,0 +1,1 @@
+../02_SYN/Netlist/bridge_Wrapper.sv

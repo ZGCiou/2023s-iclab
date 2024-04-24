@@ -1,0 +1,19 @@
+[ PAT NO. 99 ]
+
+[ choose matrix index ]
+
+matrix index 16 
+ -81  -39 
+-112  126 
+matrix index 18 
+  71   60 
+ -18 -120 
+matrix index 18 
+  71   60 
+ -18 -120 
+
+
+[ transpose C ]
+
+  71  -18 
+  60 -120 

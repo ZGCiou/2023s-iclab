@@ -1,0 +1,14 @@
+CPUv1: 
+	Pipeline(IF->ID->EXE->MEM->WB), Multi-cycle(mul->2cycle), Branch in ID
+
+CPUv2:
+	Pipeline(IF->ID->EXE->MEM->WB), Multi-cycle(mul->2cycle), Branch in EXE
+
+CPUv3:
+	D-Cache use Register
+
+CPUv4:
+	I-Cache update @(posedge clk), D-Cache use Register
+
+CPUv5:
+	D-Cache use 64*16bits SRAM

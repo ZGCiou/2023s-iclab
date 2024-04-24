@@ -1,0 +1,1 @@
+set_clock_groups -asynchronous -group clk1 -group clk2

@@ -1,0 +1,398 @@
+Magic 271485
+Revision Verdi_P-2019.06
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 108 0 1728 987 295 174
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/RAID2/COURSE/iclab/iclab074/Lab/Lab09/Exercise/01_RTL/OSB.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 3432008571.147466 3432249456.147466
+cursor 3432195000.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 2
+; marker line index
+markerPos 323
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByValue
+
+
+addGroup "Pattern Input"
+activeDirFile "" "/RAID2/COURSE/iclab/iclab074/Lab/Lab09/Exercise/01_RTL/OSB.fsdb"
+addSignal -h 15 /TESTBED/dut_p/clk
+addSignal -h 15 /TESTBED/inf/rst_n
+addSignal -h 15 -holdScope id_valid
+addSignal -h 15 -holdScope act_valid
+addSignal -h 15 -holdScope item_valid
+addSignal -h 15 -holdScope num_valid
+addSignal -h 15 -holdScope amnt_valid
+addSignal -expanded -h 15 -UNSIGNED -HEX -holdScope D
+addSignal -h 15 -UNSIGNED -UDEC -holdScope D.d_money[15:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope D.d_id[1:0]
+addSignal -h 15 -UNSIGNED -holdScope D.d_act[3:0]
+addSignal -h 15 -UNSIGNED -holdScope D.d_item[7:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope D.d_item_num[15:0]
+addGroup "Pattern Output"
+addSignal -h 15 /TESTBED/inf/out_valid
+addSignal -h 15 -holdScope out_info[31:0]
+addSignal -h 15 -UNSIGNED -holdScope err_msg[3:0]
+addSignal -h 15 -holdScope complete
+addGroup "FSM"
+addSignal -h 15 -UNSIGNED /TESTBED/dut_p/cur_state[3:0]
+addSignal -h 15 -holdScope cnt[2:0]
+addGroup "Data Register"
+addSignal -h 15 -UNSIGNED -UDEC /TESTBED/dut_p/usr_id_R[7:0]
+addSignal -h 15 -UNSIGNED -holdScope act_R[3:0]
+addSignal -h 15 -UNSIGNED -holdScope item_R[1:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope item_num_R[5:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope amnt_R[15:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope slr_id_R[7:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope slr_id_last_R[7:0]
+addSignal -h 15 -holdScope resue_slr
+addSignal -h 15 -holdScope resue_usr
+addGroup "BRIDGE"
+addSubGroup "Data Stage" -e FALSE
+endSubGroup "Data Stage"
+addSignal -h 15 -UNSIGNED /TESTBED/dut_p/cur_ds[2:0]
+addSignal -h 15 -holdScope cnt_ds
+addSubGroup "Bridge Output"
+addSignal -h 15 /TESTBED/inf/C_in_valid
+addSignal -h 15 -UNSIGNED -UDEC -holdScope C_addr[7:0]
+addSignal -h 15 -holdScope C_data_w[63:0]
+addSignal -h 15 -holdScope C_r_wb
+endSubGroup "Bridge Output"
+addSubGroup "Bridge Input" -e FALSE
+addSignal -h 15 /TESTBED/inf/C_out_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope C_data_r[63:0]
+endSubGroup "Bridge Input"
+addGroup "User Info"
+addSignal -h 15 /TESTBED/dut_p/usr_valid
+addSignal -h 15 -UNSIGNED -UDEC -holdScope usr_shop_info_R
+addSignal -expanded -h 15 -UNSIGNED -UDEC -holdScope usr_user_info_R
+addSignal -h 15 -UNSIGNED -UDEC -holdScope usr_user_info_R.money[15:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope usr_user_info_R.shop_history
+addGroup "Seller Info"
+addSignal -h 15 /TESTBED/dut_p/slr_valid
+addSignal -h 15 -UNSIGNED -UDEC -holdScope slr_shop_info_R
+addSignal -h 15 -UNSIGNED -UDEC -holdScope slr_user_info_R
+addGroup "Buy"
+addSignal -h 15 -UNSIGNED -UDEC /TESTBED/dut_p/act_check[2:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope price[8:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope total_fee[14:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope deliver_fee[6:0]
+addSignal -h 15 -holdScope level_up
+addGroup "Deposit"
+addSignal -h 15 /TESTBED/dut_p/wallet_full
+addSignal -h 15 -UNSIGNED -UDEC -holdScope money_new[16:0]
+addGroup "Return"
+addSignal -h 15 -UNSIGNED -UDEC /TESTBED/dut_p/last_buyer[0:255]
+addSignal -h 15 -holdScope last_buyer_valid[0:255]
+addGroup "G10"
+addSignal -expanded -h 15 /TESTBED/dut_p/return_valid[255:0]
+addSignal -h 15 -holdScope return_valid[255]
+addSignal -h 15 -holdScope return_valid[254]
+addSignal -h 15 -holdScope return_valid[253]
+addSignal -h 15 -holdScope return_valid[252]
+addSignal -h 15 -holdScope return_valid[251]
+addSignal -h 15 -holdScope return_valid[250]
+addSignal -h 15 -holdScope return_valid[249]
+addSignal -h 15 -holdScope return_valid[248]
+addSignal -h 15 -holdScope return_valid[247]
+addSignal -h 15 -holdScope return_valid[246]
+addSignal -h 15 -holdScope return_valid[245]
+addSignal -h 15 -holdScope return_valid[244]
+addSignal -h 15 -holdScope return_valid[243]
+addSignal -h 15 -holdScope return_valid[242]
+addSignal -h 15 -holdScope return_valid[241]
+addSignal -h 15 -holdScope return_valid[240]
+addSignal -h 15 -holdScope return_valid[239]
+addSignal -h 15 -holdScope return_valid[238]
+addSignal -h 15 -holdScope return_valid[237]
+addSignal -h 15 -holdScope return_valid[236]
+addSignal -h 15 -holdScope return_valid[235]
+addSignal -h 15 -holdScope return_valid[234]
+addSignal -h 15 -holdScope return_valid[233]
+addSignal -h 15 -holdScope return_valid[232]
+addSignal -h 15 -holdScope return_valid[231]
+addSignal -h 15 -holdScope return_valid[230]
+addSignal -h 15 -holdScope return_valid[229]
+addSignal -h 15 -holdScope return_valid[228]
+addSignal -h 15 -holdScope return_valid[227]
+addSignal -h 15 -holdScope return_valid[226]
+addSignal -h 15 -holdScope return_valid[225]
+addSignal -h 15 -holdScope return_valid[224]
+addSignal -h 15 -holdScope return_valid[223]
+addSignal -h 15 -holdScope return_valid[222]
+addSignal -h 15 -holdScope return_valid[221]
+addSignal -h 15 -holdScope return_valid[220]
+addSignal -h 15 -holdScope return_valid[219]
+addSignal -h 15 -holdScope return_valid[218]
+addSignal -h 15 -holdScope return_valid[217]
+addSignal -h 15 -holdScope return_valid[216]
+addSignal -h 15 -holdScope return_valid[215]
+addSignal -h 15 -holdScope return_valid[214]
+addSignal -h 15 -holdScope return_valid[213]
+addSignal -h 15 -holdScope return_valid[212]
+addSignal -h 15 -holdScope return_valid[211]
+addSignal -h 15 -holdScope return_valid[210]
+addSignal -h 15 -holdScope return_valid[209]
+addSignal -h 15 -holdScope return_valid[208]
+addSignal -h 15 -holdScope return_valid[207]
+addSignal -h 15 -holdScope return_valid[206]
+addSignal -h 15 -holdScope return_valid[205]
+addSignal -h 15 -holdScope return_valid[204]
+addSignal -h 15 -holdScope return_valid[203]
+addSignal -h 15 -holdScope return_valid[202]
+addSignal -h 15 -holdScope return_valid[201]
+addSignal -h 15 -holdScope return_valid[200]
+addSignal -h 15 -holdScope return_valid[199]
+addSignal -h 15 -holdScope return_valid[198]
+addSignal -h 15 -holdScope return_valid[197]
+addSignal -h 15 -holdScope return_valid[196]
+addSignal -h 15 -holdScope return_valid[195]
+addSignal -h 15 -holdScope return_valid[194]
+addSignal -h 15 -holdScope return_valid[193]
+addSignal -h 15 -holdScope return_valid[192]
+addSignal -h 15 -holdScope return_valid[191]
+addSignal -h 15 -holdScope return_valid[190]
+addSignal -h 15 -holdScope return_valid[189]
+addSignal -h 15 -holdScope return_valid[188]
+addSignal -h 15 -holdScope return_valid[187]
+addSignal -h 15 -holdScope return_valid[186]
+addSignal -h 15 -holdScope return_valid[185]
+addSignal -h 15 -holdScope return_valid[184]
+addSignal -h 15 -holdScope return_valid[183]
+addSignal -h 15 -holdScope return_valid[182]
+addSignal -h 15 -holdScope return_valid[181]
+addSignal -h 15 -holdScope return_valid[180]
+addSignal -h 15 -holdScope return_valid[179]
+addSignal -h 15 -holdScope return_valid[178]
+addSignal -h 15 -holdScope return_valid[177]
+addSignal -h 15 -holdScope return_valid[176]
+addSignal -h 15 -holdScope return_valid[175]
+addSignal -h 15 -holdScope return_valid[174]
+addSignal -h 15 -holdScope return_valid[173]
+addSignal -h 15 -holdScope return_valid[172]
+addSignal -h 15 -holdScope return_valid[171]
+addSignal -h 15 -holdScope return_valid[170]
+addSignal -h 15 -holdScope return_valid[169]
+addSignal -h 15 -holdScope return_valid[168]
+addSignal -h 15 -holdScope return_valid[167]
+addSignal -h 15 -holdScope return_valid[166]
+addSignal -h 15 -holdScope return_valid[165]
+addSignal -h 15 -holdScope return_valid[164]
+addSignal -h 15 -holdScope return_valid[163]
+addSignal -h 15 -holdScope return_valid[162]
+addSignal -h 15 -holdScope return_valid[161]
+addSignal -h 15 -holdScope return_valid[160]
+addSignal -h 15 -holdScope return_valid[159]
+addSignal -h 15 -holdScope return_valid[158]
+addSignal -h 15 -holdScope return_valid[157]
+addSignal -h 15 -holdScope return_valid[156]
+addSignal -h 15 -holdScope return_valid[155]
+addSignal -h 15 -holdScope return_valid[154]
+addSignal -h 15 -holdScope return_valid[153]
+addSignal -h 15 -holdScope return_valid[152]
+addSignal -h 15 -holdScope return_valid[151]
+addSignal -h 15 -holdScope return_valid[150]
+addSignal -h 15 -holdScope return_valid[149]
+addSignal -h 15 -holdScope return_valid[148]
+addSignal -h 15 -holdScope return_valid[147]
+addSignal -h 15 -holdScope return_valid[146]
+addSignal -h 15 -holdScope return_valid[145]
+addSignal -h 15 -holdScope return_valid[144]
+addSignal -h 15 -holdScope return_valid[143]
+addSignal -h 15 -holdScope return_valid[142]
+addSignal -h 15 -holdScope return_valid[141]
+addSignal -h 15 -holdScope return_valid[140]
+addSignal -h 15 -holdScope return_valid[139]
+addSignal -h 15 -holdScope return_valid[138]
+addSignal -h 15 -holdScope return_valid[137]
+addSignal -h 15 -holdScope return_valid[136]
+addSignal -h 15 -holdScope return_valid[135]
+addSignal -h 15 -holdScope return_valid[134]
+addSignal -h 15 -holdScope return_valid[133]
+addSignal -h 15 -holdScope return_valid[132]
+addSignal -h 15 -holdScope return_valid[131]
+addSignal -h 15 -holdScope return_valid[130]
+addSignal -h 15 -holdScope return_valid[129]
+addSignal -h 15 -holdScope return_valid[128]
+addSignal -h 15 -holdScope return_valid[127]
+addSignal -h 15 -holdScope return_valid[126]
+addSignal -h 15 -holdScope return_valid[125]
+addSignal -h 15 -holdScope return_valid[124]
+addSignal -h 15 -holdScope return_valid[123]
+addSignal -h 15 -holdScope return_valid[122]
+addSignal -h 15 -holdScope return_valid[121]
+addSignal -h 15 -holdScope return_valid[120]
+addSignal -h 15 -holdScope return_valid[119]
+addSignal -h 15 -holdScope return_valid[118]
+addSignal -h 15 -holdScope return_valid[117]
+addSignal -h 15 -holdScope return_valid[116]
+addSignal -h 15 -holdScope return_valid[115]
+addSignal -h 15 -holdScope return_valid[114]
+addSignal -h 15 -holdScope return_valid[113]
+addSignal -h 15 -holdScope return_valid[112]
+addSignal -h 15 -holdScope return_valid[111]
+addSignal -h 15 -holdScope return_valid[110]
+addSignal -h 15 -holdScope return_valid[109]
+addSignal -h 15 -holdScope return_valid[108]
+addSignal -h 15 -holdScope return_valid[107]
+addSignal -h 15 -holdScope return_valid[106]
+addSignal -h 15 -holdScope return_valid[105]
+addSignal -h 15 -holdScope return_valid[104]
+addSignal -h 15 -holdScope return_valid[103]
+addSignal -h 15 -holdScope return_valid[102]
+addSignal -h 15 -holdScope return_valid[101]
+addSignal -h 15 -holdScope return_valid[100]
+addSignal -h 15 -holdScope return_valid[99]
+addSignal -h 15 -holdScope return_valid[98]
+addSignal -h 15 -holdScope return_valid[97]
+addSignal -h 15 -holdScope return_valid[96]
+addSignal -h 15 -holdScope return_valid[95]
+addSignal -h 15 -holdScope return_valid[94]
+addSignal -h 15 -holdScope return_valid[93]
+addSignal -h 15 -holdScope return_valid[92]
+addSignal -h 15 -holdScope return_valid[91]
+addSignal -h 15 -holdScope return_valid[90]
+addSignal -h 15 -holdScope return_valid[89]
+addSignal -h 15 -holdScope return_valid[88]
+addSignal -h 15 -holdScope return_valid[87]
+addSignal -h 15 -holdScope return_valid[86]
+addSignal -h 15 -holdScope return_valid[85]
+addSignal -h 15 -holdScope return_valid[84]
+addSignal -h 15 -holdScope return_valid[83]
+addSignal -h 15 -holdScope return_valid[82]
+addSignal -h 15 -holdScope return_valid[81]
+addSignal -h 15 -holdScope return_valid[80]
+addSignal -h 15 -holdScope return_valid[79]
+addSignal -h 15 -holdScope return_valid[78]
+addSignal -h 15 -holdScope return_valid[77]
+addSignal -h 15 -holdScope return_valid[76]
+addSignal -h 15 -holdScope return_valid[75]
+addSignal -h 15 -holdScope return_valid[74]
+addSignal -h 15 -holdScope return_valid[73]
+addSignal -h 15 -holdScope return_valid[72]
+addSignal -h 15 -holdScope return_valid[71]
+addSignal -h 15 -holdScope return_valid[70]
+addSignal -h 15 -holdScope return_valid[69]
+addSignal -h 15 -holdScope return_valid[68]
+addSignal -h 15 -holdScope return_valid[67]
+addSignal -h 15 -holdScope return_valid[66]
+addSignal -h 15 -holdScope return_valid[65]
+addSignal -h 15 -holdScope return_valid[64]
+addSignal -h 15 -holdScope return_valid[63]
+addSignal -h 15 -holdScope return_valid[62]
+addSignal -h 15 -holdScope return_valid[61]
+addSignal -h 15 -holdScope return_valid[60]
+addSignal -h 15 -holdScope return_valid[59]
+addSignal -h 15 -holdScope return_valid[58]
+addSignal -h 15 -holdScope return_valid[57]
+addSignal -h 15 -holdScope return_valid[56]
+addSignal -h 15 -holdScope return_valid[55]
+addSignal -h 15 -holdScope return_valid[54]
+addSignal -h 15 -holdScope return_valid[53]
+addSignal -h 15 -holdScope return_valid[52]
+addSignal -h 15 -holdScope return_valid[51]
+addSignal -h 15 -holdScope return_valid[50]
+addSignal -h 15 -holdScope return_valid[49]
+addSignal -h 15 -holdScope return_valid[48]
+addSignal -h 15 -holdScope return_valid[47]
+addSignal -h 15 -holdScope return_valid[46]
+addSignal -h 15 -holdScope return_valid[45]
+addSignal -h 15 -holdScope return_valid[44]
+addSignal -h 15 -holdScope return_valid[43]
+addSignal -h 15 -holdScope return_valid[42]
+addSignal -h 15 -holdScope return_valid[41]
+addSignal -h 15 -holdScope return_valid[40]
+addSignal -h 15 -holdScope return_valid[39]
+addSignal -h 15 -holdScope return_valid[38]
+addSignal -h 15 -holdScope return_valid[37]
+addSignal -h 15 -holdScope return_valid[36]
+addSignal -h 15 -holdScope return_valid[35]
+addSignal -h 15 -holdScope return_valid[34]
+addSignal -h 15 -holdScope return_valid[33]
+addSignal -h 15 -holdScope return_valid[32]
+addSignal -h 15 -holdScope return_valid[31]
+addSignal -h 15 -holdScope return_valid[30]
+addSignal -h 15 -holdScope return_valid[29]
+addSignal -h 15 -holdScope return_valid[28]
+addSignal -h 15 -holdScope return_valid[27]
+addSignal -h 15 -holdScope return_valid[26]
+addSignal -h 15 -holdScope return_valid[25]
+addSignal -h 15 -holdScope return_valid[24]
+addSignal -h 15 -holdScope return_valid[23]
+addSignal -h 15 -holdScope return_valid[22]
+addSignal -h 15 -holdScope return_valid[21]
+addSignal -h 15 -holdScope return_valid[20]
+addSignal -h 15 -holdScope return_valid[19]
+addSignal -h 15 -holdScope return_valid[18]
+addSignal -h 15 -holdScope return_valid[17]
+addSignal -h 15 -holdScope return_valid[16]
+addSignal -h 15 -holdScope return_valid[15]
+addSignal -h 15 -holdScope return_valid[14]
+addSignal -h 15 -holdScope return_valid[13]
+addSignal -h 15 -holdScope return_valid[12]
+addSignal -h 15 -holdScope return_valid[11]
+addSignal -h 15 -holdScope return_valid[10]
+addSignal -h 15 -holdScope return_valid[9]
+addSignal -h 15 -holdScope return_valid[8]
+addSignal -h 15 -holdScope return_valid[7]
+addSignal -h 15 -holdScope return_valid[6]
+addSignal -h 15 -holdScope return_valid[5]
+addSignal -h 15 -holdScope return_valid[4]
+addSignal -h 15 -holdScope return_valid[3]
+addSignal -h 15 -holdScope return_valid[2]
+addSignal -h 15 -holdScope return_valid[1]
+addSignal -h 15 -holdScope return_valid[0]
+addGroup "G12"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "/RAID2/COURSE/iclab/iclab074/Lab/Lab09/Exercise/01_RTL/OSB.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/$unit_0x08175a18"
+"/TESTBED"
+"/TESTBED/inf"
+
+SCOPE_LIST_BEGIN
+"/$unit_0x08175a18"
+"/TESTBED"
+"/TESTBED/dut_p"
+"/TESTBED/inf"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

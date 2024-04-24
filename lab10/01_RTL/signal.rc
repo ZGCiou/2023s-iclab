@@ -1,0 +1,135 @@
+Magic 271485
+Revision Verdi_P-2019.06
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 95 1081 1728 985 212 212
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/RAID2/COURSE/iclab/iclab074/Lab/Lab10/Exercise/01_RTL/OSB.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 16493075.000000 16513575.000000
+cursor 16469500.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 0
+; marker line index
+markerPos 42
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByValue
+
+
+addGroup "G1"
+activeDirFile "" "/RAID2/COURSE/iclab/iclab074/Lab/Lab10/Exercise/01_RTL/OSB.fsdb"
+addSignal -h 15 /TESTBED/dut_p/clk
+addSignal -h 15 /TESTBED/inf/PATTERN/rst_n
+addSignal -expanded -h 15 -holdScope D
+addSignal -h 15 -UNSIGNED -UDEC -holdScope D.d_money[15:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope D.d_id[1:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope D.d_act[3:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope D.d_item[7:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope D.d_item_num[15:0]
+addSignal -h 15 -holdScope id_valid
+addSignal -h 15 -holdScope act_valid
+addSignal -h 15 -holdScope item_valid
+addSignal -h 15 -holdScope num_valid
+addSignal -h 15 -holdScope amnt_valid
+addGroup "G2"
+addSignal -h 15 /TESTBED/inf/PATTERN/complete
+addSignal -h 15 -UNSIGNED -UDEC -holdScope out_info[31:0]
+addSignal -h 15 -holdScope out_valid
+addSignal -h 15 -UNSIGNED -holdScope err_msg[3:0]
+addGroup "G3" -e FALSE
+addSignal -h 15 /TESTBED/check_inst/ap_Spec2
+addSignal -h 15 -holdScope ap_Spec3
+addSignal -h 15 -holdScope ap_Spec4_act
+addSignal -h 15 -holdScope ap_Spec4_amnt
+addSignal -h 15 -holdScope ap_Spec4_id
+addSignal -h 15 -holdScope ap_Spec4_item
+addSignal -h 15 -holdScope ap_Spec4_num
+addSignal -h 15 -holdScope ap_Spec5_buy_return
+addSignal -h 15 -holdScope ap_Spec5_dep
+addSignal -h 15 -holdScope ap_Spec6
+addSignal -h 15 -holdScope ap_Spec7
+addSignal -h 15 -holdScope ap_Spec8
+addSignal -h 15 -holdScope ap_Spec9_buy_return
+addSignal -h 15 -holdScope ap_Spec9_check_seller
+addSignal -h 15 -holdScope ap_Spec9_check_user
+addSignal -h 15 -holdScope ap_Spec9_dep
+addGroup "G4"
+addSignal -h 15 -UNSIGNED -UDEC /TESTBED/dut_p/usr_id_R[7:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope slr_id_R[7:0]
+addSignal -h 15 -UNSIGNED -holdScope act_R[3:0]
+addSignal -h 15 -holdScope item_num_R[5:0]
+addSignal -h 15 -UNSIGNED -holdScope item_R[1:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope amnt_R[15:0]
+addGroup "G5"
+addSignal -h 15 -UNSIGNED -UDEC /TESTBED/dut_p/slr_shop_info_R
+addSignal -h 15 -UNSIGNED -UDEC -holdScope slr_user_info_R
+addSignal -h 15 -UNSIGNED -UDEC -holdScope usr_shop_info_R
+addSignal -h 15 -UNSIGNED -UDEC -holdScope usr_user_info_R
+addGroup "G6"
+addSignal -expanded -h 15 /TESTBED/test_p/golden
+addSignal -h 15 -holdScope golden.complete
+addSignal -h 15 -UNSIGNED -UDEC -holdScope golden.out_info[31:0]
+addSignal -h 15 -UNSIGNED -holdScope golden.err_msg[3:0]
+addGroup "G7"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "/RAID2/COURSE/iclab/iclab074/Lab/Lab10/Exercise/01_RTL/OSB.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/$unit_0x08175a18"
+"/TESTBED"
+"/TESTBED/dut_p"
+"/TESTBED/inf"
+"/TESTBED/inf/OS_inf"
+"/TESTBED/inf/PATTERN"
+
+SCOPE_LIST_BEGIN
+"/$unit_0x08175a18"
+"/TESTBED"
+"/TESTBED/dut_p"
+"/TESTBED/inf"
+"/TESTBED/inf/PATTERN_OS"
+"/TESTBED/inf/CHECKER"
+"/TESTBED/inf/DRAM"
+"/TESTBED/inf/PATTERN"
+"/TESTBED/test_p"
+"/TESTBED/check_inst"
+"/TESTBED/inf/OS_inf"
+"/TESTBED/dut_p/proc_out_info"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

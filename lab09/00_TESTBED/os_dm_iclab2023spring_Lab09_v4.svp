@@ -1,0 +1,1067 @@
+/*
+============================================================================
+
+Date   : 2023/04/26
+Author : EECS Lab
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+TO DO :
+    doReturn function
+
+TO CHECK :
+    When doing return action, does it need to clear the shop_history?
+
+TO TEST :
+
+============================================================================
+*/
+`include "Usertype_OS.sv"
+import usertype::*;
+
+//======================================
+//      PARAMETERS & VARIABLES
+//======================================
+// User modification
+parameter SEED             = 123;
+parameter IS_DUMP_DRAM_DAT = 1;
+// PATTERN operation
+parameter DRAM_OFFSET      = 'h10000;
+parameter DRAM_PATH        = "../00_TESTBED/DRAM/dram.dat";
+parameter USER_NUM         = 256;
+//
+parameter L_MONEY = 300;
+parameter M_MONEY = 200;
+parameter S_MONEY = 100;
+parameter L_EXP   = 60;
+parameter M_EXP   = 40;
+parameter S_EXP   = 20;
+//
+parameter P_FEE       = 10;
+parameter G_FEE       = 30;
+parameter S_FEE       = 50;
+parameter C_FEE       = 70;
+parameter G_EXP_RANGE = 4000;
+parameter S_EXP_RANGE = 2500;
+parameter C_EXP_RANGE = 1000;
+
+// Index
+integer i;
+integer j;
+integer k;
+integer m;
+integer addr;
+
+// FILE CONTROL
+integer file;
+
+// String control
+// Should use %0s
+reg[9*8:1]  reset_color       = "\033[1;0m";
+reg[9*8:1]  high_brightness   = "\033[1;1m";
+reg[9*8:1]  flashing          = "\033[1;5m";
+
+reg[10*8:1] txt_black_prefix  = "\033[1;30m";
+reg[10*8:1] txt_red_prefix    = "\033[1;31m";
+reg[10*8:1] txt_green_prefix  = "\033[1;32m";
+reg[10*8:1] txt_yellow_prefix = "\033[1;33m";
+reg[10*8:1] txt_blue_prefix   = "\033[1;34m";
+
+reg[10*8:1] bkg_black_prefix  = "\033[40;1m";
+reg[10*8:1] bkg_red_prefix    = "\033[41;1m";
+reg[10*8:1] bkg_green_prefix  = "\033[42;1m";
+reg[10*8:1] bkg_yellow_prefix = "\033[43;1m";
+reg[10*8:1] bkg_blue_prefix   = "\033[44;1m";
+reg[10*8:1] bkg_white_prefix  = "\033[47;1m";
+
+//pragma protect begin_protected
+//pragma protect encrypt_agent="NCPROTECT"
+//pragma protect encrypt_agent_info="Encrypted using API"
+//pragma protect key_keyowner=Cadence Design Systems.
+//pragma protect key_keyname=prv(CDS_RSA_KEY_VER_1)
+//pragma protect key_method=RSA
+//pragma protect key_block
+UDtryNLGmbKR1WgeyV/1uaU/iepsPPK3AWFx9F0oc2Tc2UTniC8fgzQCYE17Lq7J
+NjfTc5c5XgoSIzMn3MOGvknq7lPQJpWcQKHdbXjichWzDCRlrdS0Z7QMMOMijL36
+l9Un5E61nJRdVXJ5+dEZXLXyQ1N4d7jTQ/U+jZ2R1QuIhMkJk4fEg08/ppx8GsNq
+4dUWqPNLZnbFQY7fc46cmQoUdR4XvJbJFzHMVH/f046N36nk/BhJ+a3ukCYm+Mik
+dPIlZUwfGjaM3DQonBJu4pxFr9OpS606rX0E9WAmTuObLsWpYxKFYvj7myl2GSRS
+PbPlFsxln6ImW06MpBcVNQ==
+//pragma protect end_key_block
+//pragma protect digest_block
+U3Gq2YWE0pLzF7fuvL9PRSB4sWo=
+//pragma protect end_digest_block
+//pragma protect data_block
+8qX4l02+K/j9mwBC2zASSom1PHRspV3gatNRJXmmrxIpaqSFNTPWce5hqT4O+jZU
+k2of/9IHMiILm+6KwDVhgGDtHGnOeo68ixqIkGHJzxzM+6paXs0DhyG5wd1yTy5Q
+xCTtOAYbXHT5V033GpXO9CytjphSHn7KGD2+zk31Qa961WFxWuU0hJ0taOnmIMYz
+PEaxt/W7NraZwwFnvNAOoayCqRR32UEmGtcD5XWRbZvHaetChGxz4hBzJQ36bBUG
+XRrEBUpzCZlcohpZoHnhKHqKDcPE0w/0icXPcn6s5R52aIgVjf79NJpdj7X5Nuj4
+r5EN+KvwWoI/NoRBracHR9KMumOsHyI1ggZdfP2/5qcU8oZZcT+RisvWdQZNQ8xO
+vX+E7OcJ6/Xk456BZQNX/T8IkamQXAQGfcLxWhW16BVvwNwS5rsO8UwvY0HWaj2q
+3qG5Xi/VJXXbQN6D0tbh/o9DGs6QGB+mc/BNP7NXETGK3ke8RdMk7oDMxY1eprZv
+JIp40P3go1E6yhWNR7n4quiEn5bMvzD7BGLDYpmwJ3mv+CLfjRDzFZh1JXeIRD/U
+ulenFJLf2SBSjjmur0tG7sG3hF44BaGBdVYch1wNv7Xku5tgjm+VaXHegK5Pbogj
+fso+zRwX1oAlvkavow0Dr28f6w3wX4lSdNATscXLBkTSAadRe/yNQUzk/mBpjm+b
+QbqhklEoBcZHZLWIcH0G2GlOFgm7op/gpx8dQjWu3rQwnYWqK3ZAbV45h7n8U5/1
+hrXDZmNdLouZpqyWPOM5osZHMJ7j0yAAwG77W3idARtjhnjjyLKYgLEql6qeb28q
+BIJ/dSSyhmt5Uc6ncbwKSzmeAAsYF4Qy2zHk6FckdmYvXA9CST39X7y5029c7CKI
+ttoHTABREVI1B7ktVCEZaT08GGqO7Pdse85P/vMXmeHeb7Uel3WJHUxwR6h8p+xx
+DHcDeXO9x8l/fdTyIosW5nbcHjPh6D1ChrnBv1dqFdCoUjT6ySE7veUNermrHYom
+fnuaqBU2ZNUHTDxhK7GJAGtobCimnAIU6neu/t3THC61PlAokNE22Dbo5pKjoAI4
+eYbX10i+K9BBxfnGzBW7fDHPUIljstzagNN0bygU3ifm7R/tt6PM1aYvzVTCxbUa
+fDqtH2MxXkFSF4P4diNmYpfJc2tWyCOqYJriy7suRgEgNlvUgo9PfuWAU8ZflJTk
+Ya8GPkYc/MdiQ1HBF2KbR6Delavu1zrReNIRDLbndO6RnJJXN661iBKFYHQXwuQw
+itFY/1Xx0oUX2Nr0jB06juFqSVvdPVnyovQdUNcJ8qYMqA1BMr/XaNFYcpNiWFTh
+svWqRjtVzi2WZ8oO93PVG8JFAUvnf7cWXQw6UBVivo/mWitUuAMlKLWCVtnzxyeO
+lr5286tTtp1wfRlrNMCOkkUnFD8Iz63GqGDhKEvDs0GHMBaiccMfg/eo9chPljMo
+n9PTSG35tI/pPbvkVpCvu950SGDTTJ5KubRDfAK36nkJboE/F/B/eMxsT66muDsv
+4rIzm7chIa0A67bJE0R8sjuHSKBZIZh4+VM4RsXstY6qMbviw7NnHeenncWGXXdV
+A0yZNVtIWn4j1s/oMfFpzS3TPGrGA3EDgxme/GMnJwhwKfbTb30krdLvevQsecWK
+GTQzMLJ/p7DrQDgobR7xSoi4JY+JjajrCre/lsQKNLSEoYxB+yMUK3TRhZ0h096v
+83vDIL9zxWpR8a8RMeuJByb57Ik3wr5JJFg60TF+vta1XpKVVYaT3SQkw/sYBHbi
+OhFLkSxG1wb1+Cq7B0Jm1ZMyMpK3zxlEn2XRyUkLPfQ=
+//pragma protect end_data_block
+//pragma protect digest_block
+9eVNh2EYNjvjplYqdhVzNBfPilA=
+//pragma protect end_digest_block
+//pragma protect end_protected
+
+// Input random mgr
+class inputRandMgr;
+    rand Money        mMoney;
+    rand User_id      mUserId;
+    rand Action       mAct;
+    rand Item_id      mItemId;
+    rand Item_num_ext mItemNum;
+    rand User_id      mOtherId;
+    User_id           mBypassId;
+    logic             isCheckSeller;
+    /*
+        'dx => action is not "check"
+        0 => check user
+        1 => check seller
+    */
+
+    function new ( int seed );
+        this.srandom(seed);
+        // TO DO
+        // This is a simple way to prevent the duplicate id
+        // Should find other way to randomize the user id excluding from current user id
+        mBypassId = 0;
+        // Use a simple bit to check the action "check" is for seller/user.
+        // Should find other way to get beautiful format
+        isCheckSeller = 'dx;
+    endfunction
+    
+    constraint rangeNormal{
+        mMoney inside     { [0:(2**$bits(Money)-1)] };
+        // !( mAct inside    { No_action } );
+        mAct inside       { Return } ; // for test
+        !(mItemId inside  { No_item });
+        mItemNum inside   { [0:(2**$bits(Item_num)-1)] };
+        !(mOtherId inside { mUserId });
+        mOtherId inside   { [0:(2**$bits(User_id)-1)] };
+    }
+    constraint rangeId{
+        !(mUserId inside { mBypassId });
+        mUserId inside   { [0:(2**$bits(User_id)-1)] };
+    }
+
+    function void displayInfo();
+        $display("%0s==============================%0s", bkg_red_prefix, reset_color);
+        $display("%0s=     Random Input Class     =%0s", bkg_red_prefix, reset_color);
+        $display("%0s==============================%0s", bkg_red_prefix, reset_color);
+        $display("------------------------------");
+        $display("[Info] : Money     : %9d", this.mMoney);
+        $display("[Info] : User Id   : %9d", this.mUserId);
+        $display("[Info] : Action    : %9s", this.mAct.name());
+        $display("[Info] : Item Id   : %9s", this.mItemId.name());
+        $display("[Info] : Item Num  : %9d", this.mItemNum);
+        $display("[Info] : Other Id  : %9d", this.mOtherId);
+        $display("------------------------------");
+        $display("[Info] : Bypass Id : %9d", this.mBypassId);
+        $display("[Info] : Check Seller : %6d", this.isCheckSeller);
+        $display("------------------------------\n");
+    endfunction
+endclass
+
+//======================================
+//      DRAM Mgr
+//======================================
+class dramMgr;
+
+    logic [7:0] golden_DRAM[ (DRAM_OFFSET+0) : ((DRAM_OFFSET+USER_NUM*8)-1) ];
+
+    function new();
+        ;
+    endfunction
+
+    // Main API
+    // Random dram.dat, use the parameter in PATTERN to control this function
+    function void randDramDat();
+        // Initialize dram class
+        dramShopRandMgr mDramShop = new(SEED);
+        dramUserRandMgr mDramUser = new(SEED);
+        // Dump dram.dat
+        $display("[Info] : andomize the DRAM data");
+        $display("[Info] : ile Path   : %0s", DRAM_PATH);
+        $display("[Info] : andom SEED : %-1d", SEED);
+        file = $fopen(DRAM_PATH,"w");
+        for(i=0 ; i<USER_NUM ; i=i+1) begin
+            // Shop info
+            addr = DRAM_OFFSET + i*8;
+            void'(mDramShop.randomize());
+            if(mDramShop.mLevel == Platinum) mDramShop.mExp = 0;
+            $fwrite(file, "@%5h\n", addr);
+            $fwrite(file, "%h %h %h %h\n",
+                {mDramShop.mLarge, mDramShop.mMedium[5:4]},
+                {mDramShop.mMedium[3:0], mDramShop.mSmall[5:2]},
+                {mDramShop.mSmall[1:0], mDramShop.mLevel, mDramShop.mExp[11:8]},
+                {mDramShop.mExp[7:0]}
+            );
+            // User info
+            addr = DRAM_OFFSET + i*8 + 4;
+            void'(mDramUser.randomize());
+            $fwrite(file, "@%5h\n", addr);
+            if(mDramUser.mShopHistory.item_ID == No_item) begin
+                $fwrite(file, "00 00 00 00\n",);
+            end
+            else begin
+                $fwrite(file, "%h %h %h %h\n",
+                    mDramUser.mMoney[15:8],
+                    mDramUser.mMoney[7:0],
+                    mDramUser.mShopHistory[15:8],
+                    mDramUser.mShopHistory[7:0]
+                );
+            end
+        end
+        $fclose(file);
+    endfunction
+
+//pragma protect begin_protected
+//pragma protect encrypt_agent="NCPROTECT"
+//pragma protect encrypt_agent_info="Encrypted using API"
+//pragma protect key_keyowner=Cadence Design Systems.
+//pragma protect key_keyname=prv(CDS_RSA_KEY_VER_1)
+//pragma protect key_method=RSA
+//pragma protect key_block
+BnIDGZj/XyfdB6KaP3yflzqX75JGNtU/zJR0zbLE1H6fnTIMfLoBshPcaF7/HyZ9
+nb84fIPq61K/O3YdSIEO6aHtw7Q8pYN5W4gTHsrNurhJkyqDG3X9vFGYXNlOX2Jm
+wfHWQs1fJcL6lxSZXdZwpEzUxBqPRm9puKCdPSMQXAuzND41P3ptwiDxJNDeNW0L
+3eHiSpYZWi5Blfx98ARrIGsnJytdOefAMNLs15gAaQiddDd/7C8EwfrssnesW0Zk
+CMBgNgZgTxD0hN84MK14bgpRQL+KI1djEp5XVn8zIh53eClpG4szc6z9U77PrcgI
+ps1e6k7hd5OXg9Mr3ZWn5w==
+//pragma protect end_key_block
+//pragma protect digest_block
+D2Xvy1XrRtXCIYipvbkBRknj/D0=
+//pragma protect end_digest_block
+//pragma protect data_block
+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
+//pragma protect end_data_block
+//pragma protect digest_block
+sBImBjq4SX4QmjkvIceTa5D0/uM=
+//pragma protect end_digest_block
+//pragma protect end_protected
+    // Display function
+    function void displayDramInfo(User_id u_id);
+        Shop_Info s_info;
+        User_Info u_info;
+        s_info = this.getShopInfo(u_id);
+        u_info = this.getUserInfo(u_id);
+        $display("[ Dram id] : %3d/@%5h\n", u_id,u_id);
+        $display("[ Shop Info ]           | [ User Info ]");
+        $display("[ %9h ]           | [ %9h ]", DRAM_OFFSET + u_id*8, DRAM_OFFSET + u_id*8 + 4);
+        $display("[ Large  ] : %10d | [ Money ]     : %d", s_info.large_num, u_info.money);
+        $display("[ Medium ] : %10d | < Shopping History >", s_info.medium_num);
+        $display("[ Small  ] : %10d | < [Item Id]   : %10s >", s_info.small_num, u_info.shop_history.item_ID.name());
+        $display("[ Level  ] : %10s | < [Item num]  : %10d >", s_info.level.name(), u_info.shop_history.item_num);
+        $display("[ Exp    ] : %10d | < [Seller Id] : %10d >", s_info.exp, u_info.shop_history.seller_ID);
+    endfunction
+
+    function void dumpToFile();
+        file = $fopen("dramCheck.txt","w");
+        for(i=0 ; i<USER_NUM ; i=i+1) begin
+            Shop_Info s_info;
+            User_Info u_info;
+            s_info = this.getShopInfo(i);
+            u_info = this.getUserInfo(i);
+            $fwrite(file, "======================================================\n");
+            $fwrite(file, "[ Dram Id ] : %3d/@%5h\n", i,i);
+            $fwrite(file, "[ Shop Info ]           | [ User Info ]\n");
+            $fwrite(file, "[ %9h ]           | [ %9h ]\n", DRAM_OFFSET + i*8, DRAM_OFFSET + i*8 + 4);
+            $fwrite(file, "[ Large  ] : %10d | [ Money ]     : %d\n", s_info.large_num, u_info.money);
+            $fwrite(file, "[ Medium ] : %10d | < Shopping History >\n", s_info.medium_num);
+            $fwrite(file, "[ Small  ] : %10d | < Item Id   > : %10s >\n", s_info.small_num, u_info.shop_history.item_ID.name());
+            $fwrite(file, "[ Level  ] : %10s | < Item num  > : %10d >\n", s_info.level.name(), u_info.shop_history.item_num);
+            $fwrite(file, "[ Exp    ] : %10d | < Seller Id > : %10d >\n", s_info.exp, u_info.shop_history.seller_ID);
+            $fwrite(file, "======================================================\n");
+        end
+        $fclose(file);
+    endfunction
+endclass
+
+//pragma protect begin_protected
+//pragma protect encrypt_agent="NCPROTECT"
+//pragma protect encrypt_agent_info="Encrypted using API"
+//pragma protect key_keyowner=Cadence Design Systems.
+//pragma protect key_keyname=prv(CDS_RSA_KEY_VER_1)
+//pragma protect key_method=RSA
+//pragma protect key_block
+fIOFTteynBC7/yr1YR0HTMPeS/x+VPPl3udyA933cWDovYYkQVzyMsv5M6yNplO4
+r/NAGfy9/Zaqqj9HCp67z8zF2Bzz0Gx5kuZLWaOIqw0AFFaI7nKjWGXyizfyA7w/
+N0WXUtF8nglp0YnYJDIQJmU+TvCptkjbiFZDHxxZJiu6+K+OsNV4gPnFT2H7u0yJ
+/TjyAvpZPTOfxKH7iqgxkQpDs47MuJM23EctBr5e5L3C8RdbS+Ydx7LjtZO69yXy
+sx54l2+JRFE867cqbdUI8zvzlIl8PBbl2EDMghG19xHNerC3fSYN+5mxBK1DurkF
+haHsnaxEPgfO6qxFPB/etA==
+//pragma protect end_key_block
+//pragma protect digest_block
+PAewfDvu/HjNT5uT5cOGPXSPvLY=
+//pragma protect end_digest_block
+//pragma protect data_block
+jq8K6IdcQ1EMdImgsUvfE+YwLaRPXcKRAj6hdnpTP5O14FT08e2B5RiWilJos0g1
+39uJdp9S9nf58TqzxpPkHJcG4GKUnFvYHjpL4TSgx49Szz3ILC9nppS8kkCPG4kr
++tPEFLYghGu8HAV1Wt0mcNqjQ8kIGIQQ1z5Yz7Ko0TgVv6o8nQZuXIX8FCi7RExc
+vGitDDiujInY65YO5LN/HLW/5UHJEx1K+gQhilRrVH7Vo2AoxA8NiU+P0z0gDSE9
+tBUFDTp1Z58rj6/6cfbd7VCdZwVxptlSk6M/kwmiUKbtTl/dwcue/pTI+2DxWM3G
+7OwXj2K7IXJx0PEn+5e+7Cj6WKZUKJ65nRQ1qna00CWg3hLQIsLpyg0z6QbMJ6fe
+bVgQp5eCRXslb7qNpr3BRqVKFvN8ubyxTLTvB+Oo5mtc90JOlft0w1jIliwoBgzj
+uGMBOT0Me9+lwujrtyClnjK+ULLmqdcmc2NeE7OvDvP8kVXKSGvUHnZbseyV0TNu
+tLNOriJ8y/Oy4Ll9O57XH1BNzd7Oifs9Iq8JnaruIWTnMXOYYAn2pKATYGm7R6Rf
+Ib4Y8n385I7g26S1lrcD7FoMOCufNWEanPcXA+STNKdKSVKjuv7seA9UwwggaVQx
+xWRqxE1gRRkZ3D+suAxdcW60jKIeRFpAzWfDvi+9l8SUChhJyU+j7aXYIu8lX6OD
+EqYSgynUsTWiMRrNHqSj3rnMFcgv9dG3L9FxPxIsbiO7ebsV/PMsuJnbt0TAbKhf
+nE+KV1V1qtMu2W209oLH0OSfKvODH8Oq1qNoBGHzaObgBRq9FUjruFemhbM99NLp
+EjuIGJaDA4LDVCpR5ARPxxgS996wIFW1ESS2qzAn4+o=
+//pragma protect end_data_block
+//pragma protect digest_block
+6kRvcq/K3mVvIOxhZs9jg1IbSOg=
+//pragma protect end_digest_block
+//pragma protect end_protected
+
+//======================================
+//      Message and Output Checker Mgr
+//======================================
+class inputInfoMgr;
+    User_id   mId;
+    Shop_Info old_shopInfo;
+    Shop_Info new_shopInfo;
+    User_Info old_userInfo;
+    User_Info new_userInfo;
+
+//pragma protect begin_protected
+//pragma protect encrypt_agent="NCPROTECT"
+//pragma protect encrypt_agent_info="Encrypted using API"
+//pragma protect key_keyowner=Cadence Design Systems.
+//pragma protect key_keyname=prv(CDS_RSA_KEY_VER_1)
+//pragma protect key_method=RSA
+//pragma protect key_block
+ZTxcXdxk1tooMJpst0GLMGg8IJbfNOzpEmINCEGrhQoAOY6L6u3ylD3loCVDXNlc
+N8ItLZLuEby5R0nRBr2Pml2pp8bh47nrpgDWiMUfNHPaxA/LaH4TUCAo/lwjeshH
+8XuEf3gGU77JE7KdocrYnjCjxeYM+um9YIzch3FjCfNndyW9tzo1W+VtU0KnKRTj
+2B2mFKvsrWTb0051nVpqwrOhGrJaWNTHsHTCXruAl8UABzYHMkx7wCd4yxcstS5x
+jG+Z0FkcUOhgZw7YhOnBURi151xJNMhUTGPl8SE3kqMjafD1U6udQCWj05Eu2tqz
+Re9hqGFZRTKon9+lSjTCXw==
+//pragma protect end_key_block
+//pragma protect digest_block
+4hT9kekVIv9MvC9DuyD15JwxPmE=
+//pragma protect end_digest_block
+//pragma protect data_block
+XHpe/BRf2bVKn9CjzeYSfOdkTHdk7qRTbaaxbSemml75vjBCfaCh0r7XH5VYMWUU
+9cjTatFzG8mQRiPZrsuDyIWdGVDvlbZQ5ZvNnm0mesng/gRxvafcy3/54+W91vwU
+dQbSx2wmrgN+yJ7MJSnSALdx3s2tbTGs8RzipLSfSaI+jHwqVewTrWu5Rchn5/jV
+NwBM1awbZ/cwLuj1BYdX3ItyGw02LTpoLtYpfftbphh9RpHazIaNJnUxsp5M7EAD
+ZI/YzghDuf0hJPYS1DQ/GzpUsFAySXmXW50KycabNY6NT4ed0RtLYK732elfC8EB
+uHuFE6FsL37lGsCLjlN7Tn0i03J6rKYvPEC7Mif/0/naWES6t6AT92HMPIOAzeeY
+k6BwIaf8e0JkVLi/EtkTLMe4cdtCpiGe+P2KGYJCuJmxcz7g3c/5hFWbSRVt4H7Q
+6K1Q/OqJico1CuLKCQ1yixXukFPJLh7bBj2l9oTuVEJDLQ0jS3RAfNDw1ZmntgCw
+ynzg0qlkoIXLg0zQ4rhq1GberhJcQqcGcWkrehlkiO/Z0x+J0L+leupDg04JkzeR
+gEYpc1LpuBoyVwHErdD5fqe6d0PClaVhv8xum0O8ux2GXNME6m56HKSZykSipkhE
+nE4USuaZD7Jf0QvlTmPhrcNOX3pkaOW7U58JJhZm7DdWqSLvl4ikmHa0VpAYXVJh
+r3VcOTfX4ttgOjTjuYfd2aIymkDZrSr4SS96By5vKnjiMb8efr6FPXF6WrwdbQke
+P7/jT9D+BHKp7gKbFk7+Vxrb5PsHPUR2uYqQOmzbohcuodMKjX5leJh0Qujucsgh
+V78CqoXAhhzTEbIy8IqBiCUqIWsRPHH/PsXeVAUPe9PJQpCKjvi0LW7PbaRDbw+W
+IPo4G0XvcvsSRWP8hcKJ331w+MBLAzkpynL5wdktwy1DG2c9YF1MdRKRfqSd/vr1
+rd200J7sUA0X/ITKvkd8lvxjXdmJ/xiAtc2j5pMSYYR1LlifJBlUSDQ2sWVJk5r8
+dEw2yQqzhuCvO3IrWgtvsApsomvL/b1H1931o8OPGF2FShQlnXPbU0gQ8RYT/w48
+ZQ/yYRhSsoFhOvg4DsTFwAPwJyADT8/zkQ6tW1rng3NJwQSxPN5eg3scHiZM3sO4
+Fku9eCeZNj1M5efdypQPA3aRox7ci9wVLHmR1UexTSy2LnTJpZkLJZGr+TJxOVxY
+k4POcQ+G8ehD+2mVes4mLDSiL97OSU10A03E9qPlZJmr4lCmx51ZZcjdlcf0YHiD
+r6aov2H6pTKASUa+h9i4dkHYvULyPICkvSs9ETK2z6JEJXDLiBEc4nXUTLR2vvgZ
+xKRMGqAOGzOqUKNlt65erxC0wxrGqmmfJIjaloTCvcPKMia2XrFM8NIg/oj0yFdl
+//pragma protect end_data_block
+//pragma protect digest_block
+JWpt4zdpox3lv4GLtYLqctcBkm8=
+//pragma protect end_digest_block
+//pragma protect end_protected
+    function void display();
+        $display("---------------------------------------------------------------------");
+        $display("%0s=     Shop Info        =%0s", bkg_yellow_prefix,reset_color);
+        $display("---------------------------------------------------------------------");
+        $display("[Shop Id  ] : 0x%3h/%4d", this.mId, this.mId);
+        $display("[Dram Addr] : %5h", this.mId*8 + DRAM_OFFSET);
+        $display("---------------------------------------------------------------------");
+        $display("        [# of Large] [# of Medium] [# of Small] | [   Level] | [ Exp]");
+        $display("[Old] : [%10d] [%11d] [%10d] | [%8s] | [%4d]", 
+            this.old_shopInfo.large_num, 
+            this.old_shopInfo.medium_num,
+            this.old_shopInfo.small_num,
+            this.old_shopInfo.level.name(),
+            this.old_shopInfo.exp
+        );
+        $display("[New] : [%10d] [%11d] [%10d] | [%8s] | [%4d]", 
+            this.new_shopInfo.large_num, 
+            this.new_shopInfo.medium_num,
+            this.new_shopInfo.small_num,
+            this.new_shopInfo.level.name(),
+            this.new_shopInfo.exp
+        );
+        $display("---------------------------------------------------------------------");
+        $display("%0s=     User Info        =%0s", bkg_green_prefix,reset_color);
+        $display("---------------------------------------------------------------------");
+        $display("[Dram Addr] : %5h", this.mId*8 + DRAM_OFFSET + 4);
+        $display("---------------------------------------------------------------------");
+        $display("                  <<           Shop History           >>");
+        $display("        [Money] | [   Item] | [# of Item] | [ Seller Id]");
+        $display("[Old] : [%5d] | [%7s] | [%9d] | [0x%3h/%4d]", 
+            this.old_userInfo.money, 
+            this.old_userInfo.shop_history.item_ID.name(), 
+            this.old_userInfo.shop_history.item_num, 
+            this.old_userInfo.shop_history.seller_ID, this.old_userInfo.shop_history.seller_ID
+        );
+        $display("[New] : [%5d] | [%7s] | [%9d] | [0x%3h/%4d]", 
+            this.new_userInfo.money, 
+            this.new_userInfo.shop_history.item_ID.name(), 
+            this.new_userInfo.shop_history.item_num, 
+            this.new_userInfo.shop_history.seller_ID, this.new_userInfo.shop_history.seller_ID
+        );
+        $display("---------------------------------------------------------------------\n");
+    endfunction
+endclass
+
+class outputCheckMgr;
+    logic        goldComplete;
+    Error_Msg    goldErrMsg;
+    logic [31:0] goldInfo;
+
+    logic        yourComplete;
+    Error_Msg    yourErrMsg;
+    logic [31:0] yourInfo;
+//pragma protect begin_protected
+//pragma protect encrypt_agent="NCPROTECT"
+//pragma protect encrypt_agent_info="Encrypted using API"
+//pragma protect key_keyowner=Cadence Design Systems.
+//pragma protect key_keyname=prv(CDS_RSA_KEY_VER_1)
+//pragma protect key_method=RSA
+//pragma protect key_block
+eukwoNu+K619oShhd1mz6FWrzaoHFrzyWsGgDBADHFbim4kT4gqwxcMYRfxgtUbK
+kKAzHmxVbDtyFU1kinBcOpVQxX+jwnQPoAaXC1Xn7LmTZVDr8bRLk+UH1wMA+zBu
+ie70fGuCRrPpbeKBWoh+DQ4tgWOlNvD4ir5hsW4n8p2OJnqn/79mBINHl/ywmeus
++PGg0dvOe5WFQ3gtK2tRRS3uY7cWntsxPbJbOjkjTRSJ0lZHmaX3zR3Qogh/o+ii
++HUHMihlH5298Nheat2YJeXJwFIbigg1QuuC7NCXP2lqvLugoS4U/AEKraVPYFYP
+PPE8NqX4vl6/c01fMTZBfw==
+//pragma protect end_key_block
+//pragma protect digest_block
+okFVSjcKQ5MAyfo4w8BIxM710EQ=
+//pragma protect end_digest_block
+//pragma protect data_block
+2Ij8vuMTWSRpX2rEoh86SX62hjUxbcQG2zTKTN8+pPRAnIg/JfLudqTlYTFswGyX
+fbp89SVh0BNT1A8hCvAVQh3oD04Wu0nGbCrrilXw+RY0E9Ytp8qm872/LOem7Wpy
+XSDlBxZ4N0ueYe8qYB9smRXLwcTVMNKqTWWLwP8k0ye8mbTm6uzbHfAPhYGTWQRO
+DIdYNsVIXyuVjE9bE4C5g6kDOc7Xg6WWSyoHDsv+1AMTkyX3KKifSTgEmyl4v0t1
+AlwhOtsfYa5kRyAufWyzIKddv/SuuF0/3vUeFamxAkPv3jniuE+e1o84n2zvzRhn
+QRr4a9BeK9CoU/jB3JI6rDCIZtJwsv3y9hi1xukr/e+GmqOoXzZNLM3BE+wvv3pm
+bbpHwGo1EHZ5pPSTMU/r7Kd7lrEey0qDzSzv+Irl+t+elDVDV5BtkDfy1FZKR2V7
+Af1d585gaSpWIt8jwFSRqLLMSMmhYGmigYYc9465UvD+3Ww958KCgvZxhaIcaqpK
+tp7i/RvAf2pQqmHt+vF5IRzgcGw0Wo0Uv95/jB5fnYCQCd7Du10tlIz8Mrh69kpV
+Kwvp5UzwfjAtDoDV5qPO9MuWtPClITVWgsKImkt+kL/C85EQLPdTaQVsseUNSTTF
+95Yx5vfyk665S7jd5KvEmg5VXBaLfnpP4p5vo7XWo9qpHQ5IMbd7ry5uZkztGp0P
+VGvIZKXFJdKhwz2zbaO8TDlK1804hp0CW39JlKzzGsS+raB9YGCLfLSQnSLdL5PR
+abMV5Z7DWH/v/hGMrBRQlswjJSSfcUh86rWZRdRKD3cNnxSXZTxPfW8C8FcTN2Ik
+JsUOidC4RD8k7CvL18wLqMjx7FdgrqFNDckilJbcO78na6AEbxlU1/y2gIhQe7+6
+gacfcV61Bfhp9N2ZyxC8zqrKSYWluD992UmJD2vrTun1JfKgpevhWsBHb6ul7QqK
+GBOU93A+iN/HnxpUPUlZ1inwVzy0QZllUdB9aEgRnDV5PHqv3hlO2gWDYCJ096z1
+Iaa8lKHuSfwHOIykvrU2Vap+qygsDbk0/umwvY3zrWVb67vcACFSCujV7XFsTPQz
+DQFdkN3IeQzWP68XbBt99KodM2HMdiT0Lwwqzs1OFqb1ZrXhzdJ9eYWSK6gYxE6S
+9K+a6n/rcZJEy8R8NSMhA/p1iDf19F47cjJ/ULYFQRb3zsD9Ng/Tq89SCjC09krs
+WIsazRmBqbmA7DwIEI+hLWRSjTCKz9BUGjDFcOLvZHo4O00LgrMXZNO0QWlpSaXz
+J7KM/Z0yqWCVQtFnO/Gmgx2sDZoyaMXCMDJStBVblmY6G9FFPh+ao9fyC/pQQAJo
+q0Zu0uzwg5LObtbrME8qf7fNiyFoUmOc6et237cocyJst9yM9EAOFm3IkdJnghuf
+7O66TIv+tN0T8iFBw9VfLD+I4GRYA2iGmqmMkU/bCPrLR2MbNrEL0l1pNSF8VZ20
++F++Q6dqqJ7fExD6YvnuNksu/QIaxy921jGwQ+1y7Y9xzzlmAGzbcFO2kyvWc32S
+pDTBbU8jMIDPaoU1CriVkoApxovKLMYzB//EFWVKOqTwwn0GrTX6XhEHU76ebQNa
+DTKtBCFRCppHw1lJkqlk2F30EXH9DpTMgHZ2EPn+MA4=
+//pragma protect end_data_block
+//pragma protect digest_block
+SskywMc77y4QCPC31AKmoecz1y8=
+//pragma protect end_digest_block
+//pragma protect end_protected
+    // Display function
+    function void displayOutputInfo();
+        $display("%0s==============================%0s", bkg_red_prefix, reset_color);
+        $display("%0s=        Output Info         =%0s", bkg_red_prefix, reset_color);
+        $display("%0s==============================%0s", bkg_red_prefix, reset_color);
+        $display("----------------------------------------------------------------");
+        $display("       [Complete] | [    Err Msg   ] | [  Info  ]");
+        $display("[Gold] [%8d] | [%14s] | [%8h]", this.goldComplete, this.goldErrMsg.name(), this.goldInfo);
+        $display("[Your] [%8d] | [%14s] | [%8h]", this.yourComplete, this.yourErrMsg.name(), this.yourInfo);
+        $display("----------------------------------------------------------------\n");
+    endfunction
+endclass
+
+//======================================
+//      Online Shopping Mgr
+//======================================
+class onlineShopMgr;
+    // Dram Mgr
+    dramMgr m_dramMgr;
+
+    // Input Random Mgr
+    inputRandMgr m_inputRandMgr;
+
+    // Message and Output Checker
+    outputCheckMgr m_outCheckMgr;
+    // Output
+    logic gold_complete;
+    Error_Msg gold_err_msg;
+    logic[31:0] gold_info;
+
+    // Main operator
+    inputInfoMgr m_mainMgr;
+
+    // Target
+    inputInfoMgr m_targetMgr;
+
+    // Action Record
+    logic m_vAct[0:USER_NUM-1];
+    /*
+        'dx : other
+        'd0 : buy
+        'd1 : sell
+    */
+    User_id m_vTradeId[0:USER_NUM-1];
+
+//pragma protect begin_protected
+//pragma protect encrypt_agent="NCPROTECT"
+//pragma protect encrypt_agent_info="Encrypted using API"
+//pragma protect key_keyowner=Cadence Design Systems.
+//pragma protect key_keyname=prv(CDS_RSA_KEY_VER_1)
+//pragma protect key_method=RSA
+//pragma protect key_block
+Ufhm4F9d5ZeL40n8GD+iQd6uLGSX0l87Qhiq2zXVRmqmWdDj0T8FdiPtVQ5Gm/vw
+GhIYBe7/jRUNh4XlWBcLxozO+0d17sEUIYzdjWfvnBA8ibVpDAGg+tDZlxZSaTzz
+Qw+UzvABYVfdl9h6uOawKs0Di/Hvkgd+pgf7SenkBNXhbHpPmoXK01eVRn7SlTEZ
+Fe02umC/VTeKh0WSp5VwnkwJIdliQlZcHrRxYMG2nrYGQsS2Ww4YwEDEih+QFNQE
+jnughqScnnnFYNxzxnk0AvFcbYZ/WfMk5fbeYJkB3viBFpZJ2hpogl8V48wgdmiP
+kdOkrEKZ8XBSC4ECGTLRtg==
+//pragma protect end_key_block
+//pragma protect digest_block
+UUEEAM5wQ4pJBOneK752raMLsDw=
+//pragma protect end_digest_block
+//pragma protect data_block
+hqBjl07nWch9wuWdQQkUyNa0A1I8StMSy9Z6toSAc0JgH5Txgx2JJna6g6eUpklx
+RKUuBwflGjXu4nphGEW9eafJrIEKoiN4ZsFsw9QbY2rfJ8lXrwDdx3+hrAAOcUAM
+mnP8dYXybczyW86BU4vDiQs6lDuO0OUD9zeWHAiioggvEHLADrijagnEf+Jezgf8
+hJhY1mfYADgnimqYeZPmr1jdCvO6jrt5+EmPr/dTalSknjuvHu6o71WS061ggQG4
++PYyn/EYDl/CUNCLhgZTlCQWaiVToF4iPxgMTo9poqiBVt4JCEOr3bIhBkvQ5lGW
+lmEnFpjmq/aunMMoQAMsCc2zrERo3yt8RdlqioCAgesNurpre3sYxugGX9NcedmY
+1+TryyrmTnn0on0psAFiGIjXOKoMWg2vB21eW9VG1MObm/SVqX9IBceqpQNbJ3ub
+eS13cCCWpoNPn9dffOP6XagHbvsHNjmutnKvRsPZQMkSPoGHWAACtQJC56zh4Gqu
+qEB/ZH0Ump7/wLbwKJhzj93Cr1Elfb3sAFuxqFaPaVLuioOuI90ShbQ5Ib0k8fGp
+YvjUBaCmLJfVmNgzInDiorY1Jt9+i9UKPmpp7WuFzF7W8/BFJ5T541uNknixIZoU
+4DiKrjtlPis3Li2JSubR66JA95ESHZzvXFqZtvqfSBYpPOkTbhsR3SksLZlqzRUt
+9RbqCbO6Mna0000feITSbC3dDC4Med3qvE+VQRBlowPxPJi8YVOD58a9IfEfp0Fh
+QBw7PU/hGthzGE7scAx4+Xq0IDXLkYbv9Ky6QNYn3N6f/K/jaZH6tWABfw2Deh2h
+CXygzXIyi35a4feBnQXzzJzYcqc8vtkno3uwHyX43HQ5+QBzD4e+vx5QiIkQr6Yr
+gQxdyI+53MADX6gaMSvtwxeht3yShvTRGvzwS/BmyEc2CEjM4+176AHOm2/W69Kb
+CGqkbgiU0FMBvy6A2vpzLqMHlNWhHwdFhEHDEKFuQ+o=
+//pragma protect end_data_block
+//pragma protect digest_block
+0oHIVUQhucFZmGMQQRNHbCdOb9I=
+//pragma protect end_digest_block
+//pragma protect end_protected
+
+    // Main API
+    // Randomize dram.dat
+    function void runDram(bit isReRandomize);
+        if(isReRandomize) this.m_dramMgr.randDramDat();
+        this.m_dramMgr.readDramFromDat();
+        if(IS_DUMP_DRAM_DAT) this.m_dramMgr.dumpToFile();
+    endfunction
+
+
+    // Randomize input
+    function void runInputRandom(bit isNewId);
+        m_inputRandMgr.isCheckSeller = 'dx;
+        if(isNewId) begin
+            m_inputRandMgr.rangeId.constraint_mode(1);
+            m_inputRandMgr.mUserId.rand_mode(1);
+        end
+        else begin
+            m_inputRandMgr.rangeId.constraint_mode(0);
+            m_inputRandMgr.mUserId.rand_mode(0);
+        end
+        void'(m_inputRandMgr.randomize());
+        if(isNewId) m_inputRandMgr.mBypassId = m_inputRandMgr.mUserId;
+    endfunction
+
+//pragma protect begin_protected
+//pragma protect encrypt_agent="NCPROTECT"
+//pragma protect encrypt_agent_info="Encrypted using API"
+//pragma protect key_keyowner=Cadence Design Systems.
+//pragma protect key_keyname=prv(CDS_RSA_KEY_VER_1)
+//pragma protect key_method=RSA
+//pragma protect key_block
+ZDVOs0ZeWeOdG0JmKHBb1InUGbQc7+XGsU8Bvez6s1n3EDwTYO4lq2cVW81b9Xpy
+9MU1E4rGdmSGBvEFpMIdDjGxyUs416maojQiK6AaD+QypixlFLgTlFTdABYNaQ9g
+b0inGuqLrp8zROnCN6VbEx8072Lvmqs5wQaQL6JxO5/yBV0Y3feZ8qsmQGaRGnDB
+xmfK4v6fJyaf3vJjz5Fk/jVZZRXNlht0OhpNVCY7Je/3vroYYWmqs2rEzV7JLI2e
+NmKUa7Z/r1pZpe9tgBduUpzhNwjJnpzD2QA+0NongylW4TJ8gIif/8k+s/wDZnq8
+fls1NS1p4Y0JRSPIXYczPQ==
+//pragma protect end_key_block
+//pragma protect digest_block
+m2wUVc9TCTcLGg0//0owBKvtqTQ=
+//pragma protect end_digest_block
+//pragma protect data_block
+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
+vabfzE/2GOO8ak1nx+o74Q==
+//pragma protect end_data_block
+//pragma protect digest_block
+No78oti8WBg/ghdqHm4Fe5Bf7nw=
+//pragma protect end_digest_block
+//pragma protect end_protected
+    // Display function
+    function void displayAction();
+        $display("%0s==============================%0s", bkg_blue_prefix, reset_color);
+        $display("%0s=        Action Info         =%0s", bkg_blue_prefix, reset_color);
+        $display("%0s==============================%0s", bkg_blue_prefix, reset_color);
+        $display("------------------------------");
+        $display("[Action] : [%10s]", this.m_inputRandMgr.mAct.name());
+        $display("------------------------------");
+        if(this.m_inputRandMgr.mAct == Buy) begin
+            $display(" [User Id  ] : 0x%3h/%4d", this.m_inputRandMgr.mUserId, this.m_inputRandMgr.mUserId);
+            $display(" [Item     ] : %10s",  this.m_inputRandMgr.mItemId.name());
+            $display(" [# of Item] : %10d",  this.m_inputRandMgr.mItemNum);
+            $display(" [Shop Id  ] : 0x%3h/%4d", this.m_inputRandMgr.mOtherId, this.m_inputRandMgr.mOtherId);
+        end
+        else if(this.m_inputRandMgr.mAct == Check) begin
+            if(this.m_inputRandMgr.isCheckSeller == 1) begin
+                $display(" [Shop Id] : 0x%3h/%4d", this.m_inputRandMgr.mOtherId, this.m_inputRandMgr.mOtherId);
+            end
+            else if(this.m_inputRandMgr.isCheckSeller == 0) begin
+                $display(" [User Id] : 0x%3h/%4d", this.m_inputRandMgr.mUserId, this.m_inputRandMgr.mUserId);
+            end
+            else begin
+                $display("[Error] : Invalid isCheckSeller. Please consult the PATTERN owner...");
+                $finish;
+            end
+        end
+        else if(this.m_inputRandMgr.mAct == Deposit) begin
+            $display(" [User Id   ] : 0x%3h/%4d", this.m_inputRandMgr.mUserId, this.m_inputRandMgr.mUserId);
+            $display(" [# of Money] : %10d", this.m_inputRandMgr.mMoney);
+        end
+        else if(this.m_inputRandMgr.mAct == Return) begin
+            $display(" [User Id  ] : 0x%3h/%4d", this.m_inputRandMgr.mUserId, this.m_inputRandMgr.mUserId);
+            $display(" [Item     ] : %10s",  this.m_inputRandMgr.mItemId.name());
+            $display(" [# of Item] : %10d",  this.m_inputRandMgr.mItemNum);
+            $display(" [Shop Id  ] : 0x%3h/%4d", this.m_inputRandMgr.mOtherId, this.m_inputRandMgr.mOtherId);
+        end
+        else begin
+            $display("[Error] : This action in input_task shouldn't be happened. Please consult the PATTERN owner...");
+            $finish;
+        end
+        $display("------------------------------\n");
+    endfunction
+endclass

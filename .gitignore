@@ -1,0 +1,8 @@
+*.log
+*.history
+*.fsdb
+*.vcd
+*fsdb*
+*Log*
+.DS_Store
+05_APR
